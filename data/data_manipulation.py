@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import csv
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn import linear_model
+from datetime import datetime
 
 
 # the csv file is at the following url: https://ici.radio-canada.ca/info/2020/coronavirus-covid-19-pandemie-cas-carte-maladie-symptomes-propagation/index-en.html
@@ -87,7 +88,7 @@ for j in range(len(montreal_data_matrix)):
    id_array.append(i)
    i += 1
 
-montreal_data['id'] = id_array
+montreal_data['Days'] = id_array
 
 # Here, we will clean up our dataframe so that it is cleaner and easier to work with
 
@@ -96,30 +97,9 @@ montreal_data.drop(['Hospitalizations', 'ICU', 'Tested', 'Positivity', 'Vaccinat
                     'Variant unknown', 'Variant B.1.617', 'Variant B.1.1.529', 'Vaccinated 1', 'Vaccinated 3'],
                    axis=1, inplace=True)
 
-# Prepare the data
-x = np.array(montreal_data['id']).reshape(-1, 1)
-y = np.array(montreal_data['Confirmed']).reshape(-1, 1)
-plt.plot(y, '-m')
-#plt.show()
-polyFeat = PolynomialFeatures(degree=2)
-x = polyFeat.fit_transform(x)
-print(x)
+def transform_date_format(x):
+    return datetime.strptime(x, '%Y-%m-%d').strftime('%m/%d/%y')
 
-# Training the data
+montreal_data['Date'] = montreal_data['Date'].apply(transform_date_format)
 
-model = linear_model.LinearRegression()
-model.fit(x, y)
-accuracy = model.score(x, y)
-print(f'Accuracy:{round(accuracy*100, 3)} %')
-y0 = model.predict(x)
-
-
-
-# Prediction
-days = 30
-
-x1 = np.array(list(range(1, 811+days))).reshape(-1, 1)
-y1 = model.predict(polyFeat.fit_transform(x1))
-plt.plot(y1, '--r')
-plt.plot(y0, '--b')
-plt.show()
+montreal_data.to_csv('clean_montreal_data.csv', index=False)

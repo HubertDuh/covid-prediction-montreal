@@ -110,11 +110,11 @@ ENV/
 env.bak/
 venv.bak/
 
-# Spyder project settings
+# Spyder SIR_model settings
 .spyderproject
 .spyproject
 
-# Rope project settings
+# Rope SIR_model settings
 .ropeproject
 
 # mkdocs documentation
